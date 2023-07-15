@@ -3,8 +3,7 @@
 """ Holds the class User"""
 
 import models
-from models.base_model import BaseModel
-from models.base_model import Base
+from models.base_model import BaseModel, Base
 from os import getenv
 import sqlalchemy
 from sqlalchemy import Column, String
