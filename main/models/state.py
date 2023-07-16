@@ -1,36 +1,35 @@
 #!/usr/bin/python3
 
-""" Holds the class State """
 
-import models
-from models.base_model import BaseModel, Base
-from models.city import City
-from os import getenv
-import sqlalchemy
-from sqlalchemy import Column, String, ForeignKey
+""" 
+State Module for HBNB project 
+"""
+
+from models.base_model import BaseModel
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String
+from os import getenv
+import models
+from models.city import City
 
+Base = declarative_base()
 
 class State(BaseModel, Base):
-    """Representation of state """
-    if models.storage_t == "db":
-        __tablename__ = 'states'
-        name = Column(String(128), nullable=False)
-        cities = relationship("City", backref="state")
+    """ State class """
+    __tablename__ = 'states'
+    
+    name = Column(String(128), nullable=False)
+    
+    if getenv('HBNB_TYPE_STORAGE') == 'db':
+        cities = relationship('City', backref='state', cascade='all, delete-orphan')
     else:
-        name = ""
-
-    def __init__(self, *args, **kwargs):
-        """Initializes state"""
-        super().__init__(*args, **kwargs)
-
-    if models.storage_t != "db":
         @property
         def cities(self):
-            """Getter for list of city instances related to the state"""
-            city_list = []
-            all_cities = models.storage.all(City)
-            for city in all_cities.values():
+            """Getter attribute in case of file storage"""
+            cities = models.storage.all(City)
+            cities_in_state = []
+            for city in cities.values():
                 if city.state_id == self.id:
-                    city_list.append(city)
-            return city_list
+                    cities_in_state.append(city)
+            return cities_in_state
